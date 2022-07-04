@@ -10,4 +10,4 @@ DOWNLOAD_PATH="$TMP_DOWNLOAD_DIR/lane.tar.xz"
 
 mkdir -p "$ASDF_INSTALL_PATH/bin"
 curl -s "$DOWNLOAD_URL" -L -o "$DOWNLOAD_PATH" 2>/dev/null
-cat "$DOWNLOAD_PATH" | tar -xJv -C "$ASDF_INSTALL_PATH/bin" --exclude LICENSE.txt
+tar -xJv -C "$ASDF_INSTALL_PATH/bin" --exclude LICENSE.txt < "$DOWNLOAD_PATH"
