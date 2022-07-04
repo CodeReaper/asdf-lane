@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+readonly TMP_DOWNLOAD_DIR="$(mktemp -dq)"
+trap 'rm -rf "${TMP_DOWNLOAD_DIR?}"' EXIT
+
+DOWNLOAD_URL="https://github.com/codereaper/lane/releases/download/$ASDF_INSTALL_VERSION/lane-$ASDF_INSTALL_VERSION.tar.xz"
+DOWNLOAD_PATH="$TMP_DOWNLOAD_DIR/lane.tar.xz"
+
+mkdir -p "$ASDF_INSTALL_PATH/bin"
+curl -s "$DOWNLOAD_URL" -L -o "$DOWNLOAD_PATH" 2>/dev/null
+cat "$DOWNLOAD_PATH" | tar -xJv -C "$ASDF_INSTALL_PATH/bin" --exclude LICENSE.txt
