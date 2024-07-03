@@ -5,9 +5,22 @@ set -eo pipefail
 readonly TMP_DOWNLOAD_DIR="$(mktemp -dq)"
 trap 'rm -rf "${TMP_DOWNLOAD_DIR?}"' EXIT
 
-DOWNLOAD_URL="https://github.com/codereaper/lane/releases/download/$ASDF_INSTALL_VERSION/lane-$ASDF_INSTALL_VERSION.tar.xz"
-DOWNLOAD_PATH="$TMP_DOWNLOAD_DIR/lane.tar.xz"
+if [[ $ASDF_INSTALL_VERSION == 0.* ]]; then
+    DOWNLOAD_ARTIFACT_URL="https://github.com/codereaper/lane/releases/download/$ASDF_INSTALL_VERSION/lane-$ASDF_INSTALL_VERSION.tar.xz"
+else
+    OS=$(uname | tr '[:upper:]' '[:lower:]')
+    ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
+    DOWNLOAD_ARTIFACT_URL="https://github.com/codereaper/lane/releases/download/$ASDF_INSTALL_VERSION/lane-$ASDF_INSTALL_VERSION-$OS-$ARCH.tar.xz"
+fi
+
+DOWNLOAD_CHECKSUM_URL="$DOWNLOAD_ARTIFACT_URL.sha512sum"
+DOWNLOAD_CHECKSUM_PATH="$TMP_DOWNLOAD_DIR/artifact.sha512sum"
+DOWNLOAD_ARTIFACT_PATH="$TMP_DOWNLOAD_DIR/$(basename "$DOWNLOAD_ARTIFACT_URL")"
 
 mkdir -p "$ASDF_INSTALL_PATH/bin"
-curl -s "$DOWNLOAD_URL" -L -o "$DOWNLOAD_PATH" 2>/dev/null
-tar -xJv -C "$ASDF_INSTALL_PATH/bin" --exclude LICENSE.txt < "$DOWNLOAD_PATH"
+curl -s "$DOWNLOAD_ARTIFACT_URL" -L -o "$DOWNLOAD_ARTIFACT_PATH" 2>/dev/null
+curl -s "$DOWNLOAD_CHECKSUM_URL" -L -o "$DOWNLOAD_CHECKSUM_PATH" 2>/dev/null
+cd "$TMP_DOWNLOAD_DIR"
+sha1sum -c "$DOWNLOAD_CHECKSUM_PATH"
+cd - 2>/dev/null
+tar -xJv -C "$ASDF_INSTALL_PATH/bin" --exclude LICENSE.txt < "$DOWNLOAD_ARTIFACT_PATH"
