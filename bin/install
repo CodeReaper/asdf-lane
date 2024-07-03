@@ -2,7 +2,8 @@
 
 set -eo pipefail
 
-readonly TMP_DOWNLOAD_DIR="$(mktemp -dq)"
+readonly TMP_DOWNLOAD_DIR
+TMP_DOWNLOAD_DIR="$(mktemp -dq)"
 trap 'rm -rf "${TMP_DOWNLOAD_DIR?}"' EXIT
 
 if [[ $ASDF_INSTALL_VERSION == 0.* ]]; then
