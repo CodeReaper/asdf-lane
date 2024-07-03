@@ -15,58 +15,30 @@ else
 
     case "$OS" in
         linux*)
-        OSARCH="linux"
         case "$ARCH" in
-            x86_64)
-                OSARCH="$OSARCH-amd64"
-                ;;
-            armv7l)
-                OSARCH="$OSARCH-arm"
-                GOARM="6"
-                ;;
-            aarch64)
-                OSARCH="$OSARCH-arm64"
-                ;;
-            *)
-                echo "Unsupported architecture: $ARCH" >&2
-                exit 1
-                ;;
+            x86_64) OSARCH="$OS-amd64" ;;
+            armv7l) OSARCH="$OS-arm" ;;
+            aarch64) OSARCH="$OS-arm64" ;;
         esac
         ;;
         darwin*)
-        OSARCH="darwin"
         case "$ARCH" in
-            x86_64)
-                OSARCH="$OSARCH-amd64"
-                ;;
-            arm64)
-                OSARCH="$OSARCH-arm64"
-                ;;
-            *)
-                echo "Unsupported architecture: $ARCH" >&2
-                exit 1
-                ;;
+            x86_64) OSARCH="$OS-amd64" ;;
+            arm64) OSARCH="$OS-arm64" ;;
         esac
         ;;
         freebsd*)
-        OSARCH="freebsd"
         case "$ARCH" in
-            amd64)
-                OSARCH="$OSARCH-amd64"
-                ;;
-            *)
-                echo "Unsupported architecture: $ARCH" >&2
-                exit 1
-                ;;
+            amd64) OSARCH="$OS-amd64" ;;
         esac
-        ;;
-        *)
-            echo "Unsupported OS: $OS" >&2
-            exit 1
-            ;;
     esac
 
-    DOWNLOAD_ARTIFACT_URL="https://github.com/codereaper/lane/releases/download/$ASDF_INSTALL_VERSION/lane-$ASDF_INSTALL_VERSION-$OS-$ARCH.tar.xz"
+    if [ -z "$OSARCH" ]; then
+        echo "Unsupported" >&2
+        exit 1
+    fi
+
+    DOWNLOAD_ARTIFACT_URL="https://github.com/codereaper/lane/releases/download/$ASDF_INSTALL_VERSION/lane-$ASDF_INSTALL_VERSION-$OSARCH.tar.xz"
 fi
 
 DOWNLOAD_CHECKSUM_URL="$DOWNLOAD_ARTIFACT_URL.sha512sum"
