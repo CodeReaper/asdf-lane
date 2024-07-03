@@ -8,8 +8,64 @@ trap 'rm -rf "${TMP_DOWNLOAD_DIR?}"' EXIT
 if [[ $ASDF_INSTALL_VERSION == 0.* ]]; then
     DOWNLOAD_ARTIFACT_URL="https://github.com/codereaper/lane/releases/download/$ASDF_INSTALL_VERSION/lane-$ASDF_INSTALL_VERSION.tar.xz"
 else
-    OS=$(uname | tr '[:upper:]' '[:lower:]')
+    OS=$(uname -s | tr '[:upper:]' '[:lower:]')
     ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
+
+    echo "Installing on $OS/$ARCH ..."
+
+    case "$OS" in
+        linux*)
+        OSARCH="linux"
+        case "$ARCH" in
+            x86_64)
+                OSARCH="$OSARCH-amd64"
+                ;;
+            armv7l)
+                OSARCH="$OSARCH-arm"
+                GOARM="6"
+                ;;
+            aarch64)
+                OSARCH="$OSARCH-arm64"
+                ;;
+            *)
+                echo "Unsupported architecture: $ARCH" >&2
+                exit 1
+                ;;
+        esac
+        ;;
+        darwin*)
+        OSARCH="darwin"
+        case "$ARCH" in
+            x86_64)
+                OSARCH="$OSARCH-amd64"
+                ;;
+            arm64)
+                OSARCH="$OSARCH-arm64"
+                ;;
+            *)
+                echo "Unsupported architecture: $ARCH" >&2
+                exit 1
+                ;;
+        esac
+        ;;
+        freebsd*)
+        OSARCH="freebsd"
+        case "$ARCH" in
+            amd64)
+                OSARCH="$OSARCH-amd64"
+                ;;
+            *)
+                echo "Unsupported architecture: $ARCH" >&2
+                exit 1
+                ;;
+        esac
+        ;;
+        *)
+            echo "Unsupported OS: $OS" >&2
+            exit 1
+            ;;
+    esac
+
     DOWNLOAD_ARTIFACT_URL="https://github.com/codereaper/lane/releases/download/$ASDF_INSTALL_VERSION/lane-$ASDF_INSTALL_VERSION-$OS-$ARCH.tar.xz"
 fi
 
