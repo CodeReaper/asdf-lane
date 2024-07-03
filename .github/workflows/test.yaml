@@ -12,7 +12,7 @@ jobs:
         run: shellcheck bin/*
 
       - name: Test Plugin
-        uses: asdf-vm/actions/plugin-test@v1
+        uses: asdf-vm/actions/plugin-test@v3
         with:
           command: "lane version"
         env:
