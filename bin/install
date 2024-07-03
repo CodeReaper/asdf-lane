@@ -5,7 +5,7 @@ set -eo pipefail
 TMP_DOWNLOAD_DIR="$(mktemp -dq)"
 trap 'rm -rf "${TMP_DOWNLOAD_DIR?}"' EXIT
 
-if [[ $ASDF_INSTALL_VERSION == 0.* ]]; then
+if [[ $ASDF_INSTALL_VERSION == 1.* ]]; then
     DOWNLOAD_ARTIFACT_URL="https://github.com/codereaper/lane/releases/download/$ASDF_INSTALL_VERSION/lane-$ASDF_INSTALL_VERSION.tar.xz"
 else
     OS=$(uname -s | tr '[:upper:]' '[:lower:]')
