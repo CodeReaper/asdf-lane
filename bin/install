@@ -21,6 +21,6 @@ mkdir -p "$ASDF_INSTALL_PATH/bin"
 curl -s "$DOWNLOAD_ARTIFACT_URL" -L -o "$DOWNLOAD_ARTIFACT_PATH" 2>/dev/null
 curl -s "$DOWNLOAD_CHECKSUM_URL" -L -o "$DOWNLOAD_CHECKSUM_PATH" 2>/dev/null
 cd "$TMP_DOWNLOAD_DIR"
-sha1sum -c "$DOWNLOAD_CHECKSUM_PATH"
+sha512sum -c "$DOWNLOAD_CHECKSUM_PATH"
 cd - 2>/dev/null
 tar -xJv -C "$ASDF_INSTALL_PATH/bin" --exclude LICENSE.txt < "$DOWNLOAD_ARTIFACT_PATH"
