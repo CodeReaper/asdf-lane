@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
-
 TMP_DOWNLOAD_DIR="$(mktemp -dq)"
 trap 'rm -rf "${TMP_DOWNLOAD_DIR?}"' EXIT
 
@@ -47,10 +45,21 @@ DOWNLOAD_ARTIFACT_PATH="$TMP_DOWNLOAD_DIR/$(basename "$DOWNLOAD_ARTIFACT_URL")"
 
 echo "Using $DOWNLOAD_ARTIFACT_URL"
 
+set -e
 mkdir -p "$ASDF_INSTALL_PATH/bin"
 curl -sf "$DOWNLOAD_ARTIFACT_URL" -L -o "$DOWNLOAD_ARTIFACT_PATH" 2>/dev/null
 curl -sf "$DOWNLOAD_CHECKSUM_URL" -L -o "$DOWNLOAD_CHECKSUM_PATH" 2>/dev/null
+
 cd "$TMP_DOWNLOAD_DIR"
-sha512sum -c "$DOWNLOAD_CHECKSUM_PATH"
+set +e
+if which sha512sum; then
+    sha512sum -c "$DOWNLOAD_CHECKSUM_PATH" || exit 1
+elif which shasum; then
+    shasum -a 512 -c "$DOWNLOAD_CHECKSUM_PATH" || exit 1
+else
+    echo 'No checksum tool available therefore installing without this additional verification.'
+fi
 cd - >/dev/null
+
+set -e
 tar -xJv -C "$ASDF_INSTALL_PATH/bin" --exclude LICENSE.txt < "$DOWNLOAD_ARTIFACT_PATH"
